@@ -1,42 +1,193 @@
 # Inquiry Institute News Aggregator
 
-A modern, responsive news aggregator for the Inquiry Institute, designed to curate and display news and insights related to critical thinking, education, research, and inquiry-based learning.
+A modern, AI-powered news aggregator for the Inquiry Institute, designed to curate and display news and insights related to critical thinking, education, research, and inquiry-based learning.
 
-## Features
+## 🚀 Features
 
-- Clean, modern interface with gradient design
-- Responsive grid layout
-- Smooth animations and transitions
-- Easy to update news content
-- Static site ready for GitHub Pages
+### Signal Detection
+- **GitHub Trending**: Tracks repos with >1k stars in 24h
+- **Model Releases**: Monitors new AI models on Hugging Face
+- **Benchmark Updates**: Detects new benchmark leaders
 
-## Structure
+### Smart Content Selection
+- **Multi-source Ingestion**: RSS feeds, NewsAPI, arXiv, Hacker News, Reddit
+- **Duplicate Detection**: Clusters similar stories using TF-IDF and cosine similarity
+- **RAG-based Filtering**: Scores articles for faculty relevance using semantic search
+- **Automated Updates**: GitHub Actions runs every 6 hours
 
-- `index.html` - Main HTML structure
-- `styles.css` - Styling and responsive design
-- `app.js` - Dynamic news rendering and interactions
+## 📋 Architecture
 
-## Customization
-
-To add or update news articles, edit the `newsData` array in `app.js`:
-
-```javascript
-const newsData = [
-    {
-        title: "Your Article Title",
-        source: "Source Name",
-        date: "YYYY-MM-DD",
-        description: "Article description...",
-        url: "https://link-to-article.com"
-    },
-    // Add more articles...
-];
+```
+aggregate.py (main orchestrator)
+    ├── signal_detector.py    # AI signals (GitHub, HuggingFace, benchmarks)
+    ├── ingestion.py          # News from RSS feeds and APIs
+    ├── clustering.py         # Deduplication using TF-IDF
+    └── rag.py                # Faculty-relevance scoring
 ```
 
-## Deployment
+## 🛠️ Setup
 
-This site is hosted on GitHub Pages at: [Your URL will appear here after setup]
+### 1. Install Dependencies
 
-## License
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Configure Environment
+
+Copy `.env.example` to `.env` and add your API keys:
+
+```bash
+cp .env.example .env
+```
+
+Optional API keys (system works without them but with limited features):
+- `GITHUB_TOKEN`: Increases API rate limits
+- `OPENAI_API_KEY`: For enhanced embeddings (uses local otherwise)
+- `NEWS_API_KEY`: For NewsAPI.org integration
+- `HF_TOKEN`: For Hugging Face API access
+
+### 3. Run Locally
+
+```bash
+python aggregate.py
+```
+
+This will:
+1. Detect AI signals (GitHub trends, new models, benchmarks)
+2. Ingest news from RSS feeds
+3. Deduplicate similar articles
+4. Score by faculty relevance
+5. Save top 50 items to `news_data.json`
+
+## 📊 Customization
+
+### Faculty Keywords
+
+Edit `config.py` to customize relevance scoring:
+
+```python
+FACULTY_KEYWORDS = [
+    'critical thinking',
+    'education',
+    'inquiry-based learning',
+    # Add more...
+]
+```
+
+### News Sources
+
+Add RSS feeds in `config.py`:
+
+```python
+RSS_FEEDS = [
+    'https://your-source.com/rss',
+    # Add more feeds...
+]
+```
+
+### Thresholds
+
+Adjust detection thresholds:
+
+```python
+GITHUB_STAR_THRESHOLD = 1000      # Stars in 24h
+SIMILARITY_THRESHOLD = 0.85       # Duplicate detection
+MAX_ARTICLES = 50                 # Max articles to display
+```
+
+## 🤖 Automated Updates
+
+The system uses GitHub Actions to run every 6 hours:
+
+1. Fetches latest news and signals
+2. Processes and scores content
+3. Updates `news_data.json`
+4. Commits and pushes changes
+5. GitHub Pages automatically deploys
+
+### Required GitHub Secrets
+
+Add these in your repository settings:
+
+- `GH_TOKEN`: GitHub Personal Access Token
+- `OPENAI_API_KEY`: (optional)
+- `NEWS_API_KEY`: (optional)
+- `HF_TOKEN`: (optional)
+
+## 🌐 Deployment
+
+This site is hosted on GitHub Pages at: https://dcmcshan.github.io/inquiry-institute-news/
+
+The frontend automatically loads from `news_data.json` and displays:
+- 🔥 Trending GitHub repos
+- 🤖 New model releases
+- 📊 Benchmark updates
+- 📰 Relevant articles
+
+## 🎨 Frontend Features
+
+- Responsive grid layout
+- Type-specific icons and colors
+- Relevance score badges
+- Matched keyword tags
+- Smooth animations
+- Mobile-friendly design
+
+## 📈 System Flow
+
+```
+Every 6 hours:
+  ↓
+GitHub Actions triggers
+  ↓
+Run aggregate.py
+  ↓
+├─ Detect signals (GitHub, HF, benchmarks)
+├─ Ingest news (RSS, APIs)
+├─ Deduplicate (clustering)
+└─ Score relevance (RAG)
+  ↓
+Save news_data.json
+  ↓
+Commit & push
+  ↓
+GitHub Pages deploys
+  ↓
+Frontend updates automatically
+```
+
+## 🧪 Testing
+
+Test individual components:
+
+```bash
+# Test signal detection
+python signal_detector.py
+
+# Test ingestion
+python ingestion.py
+
+# Test clustering
+python clustering.py
+
+# Test RAG scoring
+python rag.py
+```
+
+## 📝 License
 
 © 2026 Inquiry Institute. All rights reserved.
+
+## 🤝 Contributing
+
+To add new signal detectors or news sources:
+
+1. Add detector class in `signal_detector.py` or source in `ingestion.py`
+2. Update `config.py` with new parameters
+3. Test locally with `python aggregate.py`
+4. Commit and push changes
+
+---
+
+**Built with**: Python, scikit-learn, Beautiful Soup, feedparser, GitHub Actions
