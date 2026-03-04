@@ -5,6 +5,7 @@ from signal_detector import detect_all_signals
 from ingestion import ingest_all_news
 from clustering import ArticleClusterer
 from rag import ContentSelector
+from gotosocial_poster import GoToSocialPoster
 import config
 
 def run_aggregation():
@@ -48,7 +49,13 @@ def run_aggregation():
     
     print(f"   Saved to {config.OUTPUT_FILE}")
     
-    # Step 6: Display top items
+    # Step 6: Post to GoToSocial
+    print("\n📱 STEP 6: Posting to GoToSocial...")
+    poster = GoToSocialPoster()
+    posted_count = poster.post_articles(final_content, max_posts=5)
+    print(f"   Posted {posted_count} articles to social.inquiry.institute")
+    
+    # Step 7: Display top items
     print("\n✨ TOP 5 ITEMS:")
     print("-" * 60)
     for i, item in enumerate(final_content[:5], 1):
