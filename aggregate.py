@@ -1,17 +1,21 @@
 """Main aggregation pipeline - orchestrates all components."""
 import json
+import sys
 from datetime import datetime
 from signal_detector import detect_all_signals
 from ingestion import ingest_all_news
 from clustering import ArticleClusterer
 from rag import ContentSelector
 from gotosocial_poster import GoToSocialPoster
+from dry_run import FacultyArticleMatcher
 import config
 
-def run_aggregation():
+def run_aggregation(dry_run: bool = False):
     """Run the complete news aggregation pipeline."""
     print("=" * 60)
     print("🚀 Inquiry Institute News Aggregator")
+    if dry_run:
+        print("   🧪 DRY RUN MODE - No posts will be made")
     print("=" * 60)
     
     # Step 1: Detect signals
@@ -49,12 +53,19 @@ def run_aggregation():
     
     print(f"   Saved to {config.OUTPUT_FILE}")
     
-    # Step 6: Post to GoToSocial
-    print("\n📱 STEP 6: Posting to GoToSocial...")
-    poster = GoToSocialPoster()
-    faculty_posts = poster.post_articles(final_content, max_posts_per_faculty=3)
-    total_posts = sum(faculty_posts.values())
-    print(f"   Posted {total_posts} articles across {len([c for c in faculty_posts.values() if c > 0])} faculty accounts")
+    # Step 6: Faculty matching and posting
+    if dry_run:
+        print("\n🧪 STEP 6: DRY RUN - Matching articles to faculty...")
+        matcher = FacultyArticleMatcher(interest_threshold=0.3)
+        matches = matcher.match_articles_to_faculty(final_content)
+        report = matcher.create_dry_run_report(matches, output_file='dry_run_report.json')
+        print(f"\n   ✅ Dry run complete - check dry_run_report.json")
+    else:
+        print("\n📱 STEP 6: Posting to GoToSocial...")
+        poster = GoToSocialPoster()
+        faculty_posts = poster.post_articles(final_content, max_posts_per_faculty=3)
+        total_posts = sum(faculty_posts.values())
+        print(f"   Posted {total_posts} articles across {len([c for c in faculty_posts.values() if c > 0])} faculty accounts")
     
     # Step 7: Display top items
     print("\n✨ TOP 5 ITEMS:")
@@ -66,10 +77,15 @@ def run_aggregation():
         print(f"   {item.get('url', '')}")
     
     print("\n" + "=" * 60)
-    print("✅ Aggregation complete!")
+    if dry_run:
+        print("✅ Dry run complete! Review dry_run_report.json")
+    else:
+        print("✅ Aggregation complete!")
     print("=" * 60)
     
     return final_content
 
 if __name__ == '__main__':
-    run_aggregation()
+    # Check for --dry-run flag
+    dry_run_mode = '--dry-run' in sys.argv
+    run_aggregation(dry_run=dry_run_mode)

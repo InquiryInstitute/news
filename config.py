@@ -57,3 +57,7 @@ SIMILARITY_THRESHOLD = 0.85  # Cosine similarity threshold for duplicates
 # Output
 OUTPUT_FILE = 'news_data.json'
 MAX_ARTICLES = 50
+
+# Faculty Posting
+INTEREST_THRESHOLD = 0.3  # Minimum interest score for faculty to post (0.0-1.0)
+MAX_POSTS_PER_FACULTY = 3  # Maximum posts per faculty per run
