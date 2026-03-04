@@ -52,8 +52,9 @@ def run_aggregation():
     # Step 6: Post to GoToSocial
     print("\n📱 STEP 6: Posting to GoToSocial...")
     poster = GoToSocialPoster()
-    posted_count = poster.post_articles(final_content, max_posts=5)
-    print(f"   Posted {posted_count} articles to social.inquiry.institute")
+    faculty_posts = poster.post_articles(final_content, max_posts_per_faculty=3)
+    total_posts = sum(faculty_posts.values())
+    print(f"   Posted {total_posts} articles across {len([c for c in faculty_posts.values() if c > 0])} faculty accounts")
     
     # Step 7: Display top items
     print("\n✨ TOP 5 ITEMS:")
