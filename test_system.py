@@ -114,6 +114,29 @@ def test_ingestion():
         print(f"❌ Ingestion error: {e}")
         return False
 
+def test_faculty_db():
+    """Test Supabase faculty database connection."""
+    print("\nTesting Supabase faculty database...")
+    try:
+        from faculty_db import FacultyDatabase
+        
+        db = FacultyDatabase()
+        keywords = db.get_faculty_keywords()
+        profiles = db.get_faculty_profiles()
+        
+        print(f"✅ Faculty database works")
+        print(f"   Keywords: {len(keywords)}")
+        print(f"   Faculty with interests: {len(profiles)}")
+        
+        if len(keywords) > 0:
+            print(f"   Sample keywords: {', '.join(keywords[:5])}...")
+        
+        return True
+    except Exception as e:
+        print(f"❌ Faculty database error: {e}")
+        print(f"   Make sure SUPABASE_URL and SUPABASE_KEY are set in .env")
+        return False
+
 def main():
     """Run all tests."""
     print("=" * 60)
@@ -123,6 +146,7 @@ def main():
     tests = [
         test_imports,
         test_config,
+        test_faculty_db,
         test_clustering,
         test_rag,
         test_signal_detector,

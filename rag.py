@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import config
+from faculty_db import FacultyDatabase
 
 class FacultyRAG:
     """Retrieval-Augmented Generation for selecting faculty-relevant content."""
@@ -14,8 +15,16 @@ class FacultyRAG:
             stop_words='english'
         )
         
+        # Load faculty interests from Supabase
+        self.db = FacultyDatabase()
+        self.faculty_keywords = self.db.get_faculty_keywords()
+        self.faculty_profiles = self.db.get_faculty_profiles()
+        
         # Faculty interest profile
-        self.faculty_profile = ' '.join(config.FACULTY_KEYWORDS)
+        self.faculty_profile = ' '.join(self.faculty_keywords)
+        
+        print(f"🎯 RAG initialized with {len(self.faculty_keywords)} faculty keywords")
+        print(f"👥 Tracking interests for {len(self.faculty_profiles)} faculty members")
     
     def score_relevance(self, articles: List[Dict]) -> List[Dict]:
         """Score articles by relevance to faculty interests."""
@@ -71,10 +80,23 @@ class FacultyRAG:
         """Add matched keywords to article metadata."""
         for article in articles:
             text = f"{article.get('title', '')} {article.get('description', '')}".lower()
-            matched_keywords = [kw for kw in config.FACULTY_KEYWORDS if kw in text]
+            matched_keywords = [kw for kw in self.faculty_keywords if kw.lower() in text]
             
             if matched_keywords:
                 article['metadata']['matched_keywords'] = matched_keywords
+            
+            # Also track which faculty members might be interested
+            interested_faculty = []
+            for faculty in self.faculty_profiles:
+                faculty_topics = [t.lower() for t in faculty.get('news_topics', [])]
+                if any(topic in text for topic in faculty_topics):
+                    interested_faculty.append({
+                        'name': faculty['name'],
+                        'slug': faculty['slug']
+                    })
+            
+            if interested_faculty:
+                article['metadata']['interested_faculty'] = interested_faculty
         
         return articles
 

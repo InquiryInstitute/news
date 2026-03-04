@@ -12,7 +12,8 @@ A modern, AI-powered news aggregator for the Inquiry Institute, designed to cura
 ### Smart Content Selection
 - **Multi-source Ingestion**: RSS feeds, NewsAPI, arXiv, Hacker News, Reddit
 - **Duplicate Detection**: Clusters similar stories using TF-IDF and cosine similarity
-- **RAG-based Filtering**: Scores articles for faculty relevance using semantic search
+- **RAG-based Filtering**: Scores articles for faculty relevance using Supabase faculty interests
+- **Faculty Tracking**: Identifies which faculty members might be interested in each article
 - **Automated Updates**: GitHub Actions runs every 6 hours
 
 ## 📋 Architecture
@@ -41,7 +42,11 @@ Copy `.env.example` to `.env` and add your API keys:
 cp .env.example .env
 ```
 
-Optional API keys (system works without them but with limited features):
+**Required**:
+- `SUPABASE_URL`: Supabase project URL (for faculty interests)
+- `SUPABASE_KEY`: Supabase anon key (for faculty interests)
+
+**Optional** API keys (system works without them but with limited features):
 - `GITHUB_TOKEN`: Increases API rate limits
 - `OPENAI_API_KEY`: For enhanced embeddings (uses local otherwise)
 - `NEWS_API_KEY`: For NewsAPI.org integration
@@ -62,16 +67,27 @@ This will:
 
 ## 📊 Customization
 
-### Faculty Keywords
+### Faculty Interests (Dynamic via Supabase)
 
-Edit `config.py` to customize relevance scoring:
+Faculty members can update their news interests directly in the Supabase `faculty` table:
+
+```sql
+UPDATE faculty 
+SET news_topics = ARRAY['AI', 'philosophy', 'quantum computing', 'education']
+WHERE id = 'faculty_id';
+```
+
+The system automatically pulls all unique topics from faculty members and uses them for relevance scoring.
+
+### Fallback Keywords
+
+If Supabase is unavailable, the system falls back to default keywords in `config.py`:
 
 ```python
-FACULTY_KEYWORDS = [
+DEFAULT_FACULTY_KEYWORDS = [
     'critical thinking',
     'education',
-    'inquiry-based learning',
-    # Add more...
+    # Add more fallbacks...
 ]
 ```
 
@@ -110,7 +126,9 @@ The system uses GitHub Actions to run every 6 hours:
 
 Add these in your repository settings:
 
-- `GH_TOKEN`: GitHub Personal Access Token
+- `SUPABASE_URL`: Supabase project URL (required)
+- `SUPABASE_KEY`: Supabase anon key (required)
+- `GH_TOKEN`: GitHub Personal Access Token (optional)
 - `OPENAI_API_KEY`: (optional)
 - `NEWS_API_KEY`: (optional)
 - `HF_TOKEN`: (optional)

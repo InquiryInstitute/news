@@ -10,6 +10,10 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
 NEWS_API_KEY = os.getenv('NEWS_API_KEY', '')
 HF_TOKEN = os.getenv('HF_TOKEN', '')
 
+# Supabase
+SUPABASE_URL = os.getenv('SUPABASE_URL', '')
+SUPABASE_KEY = os.getenv('SUPABASE_KEY', '')
+
 # Signal Detection Thresholds
 GITHUB_STAR_THRESHOLD = 1000  # Stars gained in 24h
 GITHUB_TRENDING_HOURS = 24
@@ -30,8 +34,8 @@ BENCHMARK_SOURCES = [
     'https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard',
 ]
 
-# Faculty Interest Keywords (for RAG filtering)
-FACULTY_KEYWORDS = [
+# Default Faculty Interest Keywords (fallback if Supabase unavailable)
+DEFAULT_FACULTY_KEYWORDS = [
     'critical thinking',
     'education',
     'inquiry-based learning',
