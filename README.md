@@ -117,7 +117,7 @@ Add these in your repository settings:
 
 ## 🌐 Deployment
 
-This site is hosted on GitHub Pages at: https://dcmcshan.github.io/inquiry-institute-news/
+This site is hosted on GitHub Pages at: https://inquiryinstitute.github.io/news/
 
 The frontend automatically loads from `news_data.json` and displays:
 - 🔥 Trending GitHub repos

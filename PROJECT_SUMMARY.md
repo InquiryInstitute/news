@@ -135,12 +135,12 @@ Signal Detection → News Ingestion → Deduplication → RAG Scoring → Top 50
 ## 🚀 Deployment
 
 ### Repository
-- **URL**: https://github.com/dcmcshan/inquiry-institute-news
+- **URL**: https://github.com/InquiryInstitute/news
 - **Visibility**: Public
 - **Default Branch**: main
 
 ### GitHub Pages
-- **URL**: https://dcmcshan.github.io/inquiry-institute-news/
+- **URL**: https://inquiryinstitute.github.io/news/
 - **Build Type**: Legacy (automatic from main branch)
 - **Source**: main branch, root path
 - **HTTPS**: Enforced
@@ -245,6 +245,6 @@ inquiry-institute-news/
 
 ## 🌐 Live Site
 
-**https://dcmcshan.github.io/inquiry-institute-news/**
+**https://inquiryinstitute.github.io/news/**
 
 The site is now live and will automatically update every 6 hours with fresh, faculty-relevant content!

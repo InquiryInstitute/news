@@ -5,8 +5,8 @@
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/dcmcshan/inquiry-institute-news.git
-cd inquiry-institute-news
+git clone https://github.com/InquiryInstitute/news.git
+cd news
 ```
 
 ### 2. Set Up Python Environment
@@ -73,7 +73,7 @@ You can manually trigger the aggregation:
 ## 📱 View the Site
 
 Your news aggregator is live at:
-**https://dcmcshan.github.io/inquiry-institute-news/**
+**https://inquiryinstitute.github.io/news/**
 
 ## 🎯 Testing Locally
 
